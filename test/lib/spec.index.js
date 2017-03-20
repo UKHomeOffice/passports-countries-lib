@@ -127,6 +127,19 @@ describe('CountriesCachedModel', () => {
         });
     });
 
+    describe('on', () => {
+        it('should be a function', () => {
+            instance.on.should.be.a('function');
+        });
+
+        it('should cadd event listeners to both caches', () => {
+            let handler = sinon.stub();
+            instance.on('event', handler);
+            stubs.countryCache.on.should.have.been.calledWithExactly('event', handler);
+            stubs.policyCache.on.should.have.been.calledWithExactly('event', handler);
+        });
+    });
+
     describe('start', () => {
         it('should be a function', () => {
             instance.start.should.be.a('function');
