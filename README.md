@@ -6,8 +6,14 @@ Country data API cache and wrapper library
 ```
 const CountriesLib = require('hmpo-countries-lib');
 
+let redisFactory = {
+    getClient() {
+        return redisInstance;
+    }
+}
+
 let countriesLib = new CountriesLib({
-    store: redisInstance,
+    store: redisFactory,
     key: 'store-key-prefix',
     storeInterval: 10000, // 10 seconds
     countryUrl: 'http://example.com/api/countries',
