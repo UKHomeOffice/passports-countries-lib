@@ -34,6 +34,9 @@ describe('CountriesCachedModel', () => {
         ];
 
         stubs = {
+            storeFactory: {
+                getClient: sinon.stub()
+            },
             store: {
                 get: sinon.stub(),
                 set: sinon.stub().yields(null)
@@ -53,6 +56,8 @@ describe('CountriesCachedModel', () => {
             }
         };
 
+        stubs.storeFactory.getClient.returns(stubs.store);
+
         stubs.HmpoCachedModel
             .onCall(0).returns(stubs.countryCache)
             .onCall(1).returns(stubs.policyCache);
@@ -61,7 +66,7 @@ describe('CountriesCachedModel', () => {
             countryUrl: 'http://example.com/countries',
             policyUrl: 'http://example.com/policy',
             key: 'test',
-            store: stubs.store,
+            store: stubs.storeFactory,
             storeInterval: 1000,
             countryInterval: 2000,
             policyInterval: 3000
@@ -99,7 +104,7 @@ describe('CountriesCachedModel', () => {
             stubs.HmpoCachedModel.should.have.been.calledTwice;
             stubs.HmpoCachedModel.args[0][1].should.deep.equal({
                 url: 'http://example.com/countries',
-                store: stubs.store,
+                store: stubs.storeFactory,
                 key: 'test-countries',
                 apiInterval: 2000,
                 storeInterval: 1000
@@ -111,7 +116,7 @@ describe('CountriesCachedModel', () => {
             stubs.HmpoCachedModel.should.have.been.calledTwice;
             stubs.HmpoCachedModel.args[1][1].should.deep.equal({
                 url: 'http://example.com/policy',
-                store: stubs.store,
+                store: stubs.storeFactory,
                 key: 'test-policy',
                 apiInterval: 3000,
                 storeInterval: 1000
