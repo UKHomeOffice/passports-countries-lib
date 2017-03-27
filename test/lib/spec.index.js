@@ -27,10 +27,10 @@ describe('CountriesCachedModel', () => {
             { id: 'NA', slug: 'narnia' }
         ];
         let policyData = [
-            { id: 'UK', channel: 'ONLINE', contentType: 1 },
-            { id: 'FO', channel: 'ONLINE', contentType: 2 },
-            { id: 'BA', channel: 'NA', contentType: 7 },
-            { id: 'NA', channel: 'ONLINE', contentType: 7 }
+            { id: 'UK', channel: 'ONLINE', contentType: 1, status: 'ACTIVE' },
+            { id: 'FO', channel: 'ONLINE', contentType: 2, status: 'INACTIVE'  },
+            { id: 'BA', channel: 'NA', contentType: 7, status: 'INACTIVE'  },
+            { id: 'NA', channel: 'ONLINE', contentType: 7, status: 'INACTIVE'  }
         ];
 
         stubs = {
@@ -242,10 +242,10 @@ describe('CountriesCachedModel', () => {
         it('should index policies by id', () => {
             instance._indexPolicies();
             instance._policiesById.should.deep.equal({
-                UK: { id: 'UK', channel: 'ONLINE', contentType: 1 },
-                FO: { id: 'FO', channel: 'ONLINE', contentType: 2 },
-                BA: { id: 'BA', channel: 'NA', contentType: 7 },
-                NA: { id: 'NA', channel: 'ONLINE', contentType: 7 }
+                UK: { id: 'UK', channel: 'ONLINE', contentType: 1, status: 'ACTIVE' },
+                FO: { id: 'FO', channel: 'ONLINE', contentType: 2, status: 'INACTIVE' },
+                BA: { id: 'BA', channel: 'NA', contentType: 7, status: 'INACTIVE' },
+                NA: { id: 'NA', channel: 'ONLINE', contentType: 7, status: 'INACTIVE' }
             });
         });
     });
@@ -305,7 +305,13 @@ describe('CountriesCachedModel', () => {
             instance._indexCountries();
             instance._indexPolicies();
             instance.getCountryDataById('UK').should.deep.equal(
-                { id: 'UK', slug: 'united-kingdom', channel: 'ONLINE', contentType: 1 }
+                {
+                    id: 'UK',
+                    slug: 'united-kingdom',
+                    status: 'ACTIVE',
+                    channel: 'ONLINE',
+                    contentType: 1
+                }
             );
         });
 
@@ -333,6 +339,7 @@ describe('CountriesCachedModel', () => {
                 id: 'UK',
                 slug: 'united-kingdom',
                 channel: 'ONLINE',
+                status: 'ACTIVE',
                 contentType: 1
             });
         });
@@ -344,8 +351,74 @@ describe('CountriesCachedModel', () => {
 
         it('should return null if no policy data is found', () => {
             instance._indexCountries();
+            instance._indexPolicies();
             delete instance._policiesById['UK'];
             expect(instance.getCountryDataBySlug('united-kingdom')).to.equal(null);
         });
     });
+
+    describe('getSlugById', () => {
+        it('should be a function', () => {
+            instance.getSlugById.should.be.a('function');
+        });
+
+        it('should get country slug when the id is given', () => {
+            instance._indexCountries();
+            instance.getSlugById('UK').should.equal('united-kingdom');
+        });
+
+        it('should return undefined if country is not found', () => {
+            instance._indexCountries();
+            expect(instance.getSlugById('??')).to.equal(undefined);
+        });
+    });
+
+    describe('isRestrictedById', () => {
+        it('should be a function', () => {
+            instance.isRestrictedById.should.be.a('function');
+        });
+
+        it('should return true for a country that is restricted', () => {
+            instance._indexCountries();
+            instance._indexPolicies();
+            instance.isRestrictedById('NA').should.equal(true);
+        });
+
+        it('should return false for a country that is not restricted', () => {
+            instance._indexCountries();
+            instance._indexPolicies();
+            instance.isRestrictedById('UK').should.equal(false);
+        });
+
+        it('should return undefined if country is not found', () => {
+            instance._indexCountries();
+            instance._indexPolicies();
+            expect(instance.isRestrictedById('??')).to.equal(undefined);
+        });
+    });
+
+    describe('isActiveById', () => {
+        it('should be a function', () => {
+            instance.isActiveById.should.be.a('function');
+        });
+
+        it('should return true for a country that is active', () => {
+            instance._indexCountries();
+            instance._indexPolicies();
+            instance.isActiveById('UK').should.equal(true);
+        });
+
+        it('should return false for a country that is not active', () => {
+            instance._indexCountries();
+            instance._indexPolicies();
+            instance.isActiveById('NA').should.equal(false);
+        });
+
+        it('should return undefined if country is not found', () => {
+            instance._indexCountries();
+            instance._indexPolicies();
+            expect(instance.isActiveById('??')).to.equal(undefined);
+        });
+    });
+
 });
