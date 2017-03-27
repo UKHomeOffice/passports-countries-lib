@@ -184,16 +184,16 @@ describe('CountriesCachedModel', () => {
         });
     });
 
-    describe('getResidentCountries', () => {
+    describe('getOverseasCountries', () => {
         it('should be a function', () => {
-            instance.getResidentCountries.should.be.a('function');
+            instance.getOverseasCountries.should.be.a('function');
         });
 
-        it('should return the value of the _residentCountries array', () => {
-            instance._residentCountries = [
+        it('should return the value of the _overseasCountries array', () => {
+            instance._overseasCountries = [
                 { id: 'FO', slug: 'foo' }
             ];
-            instance.getResidentCountries().should.deep.equal([
+            instance.getOverseasCountries().should.deep.equal([
                 { id: 'FO', slug: 'foo' }
             ]);
         });
@@ -204,9 +204,9 @@ describe('CountriesCachedModel', () => {
             instance._indexCountries.should.be.a('function');
         });
 
-        it('should set _residentCountries to all countries except the UK', () => {
+        it('should set _overseasCountries to all countries except the UK', () => {
             instance._indexCountries();
-            instance._residentCountries.should.deep.equal([
+            instance._overseasCountries.should.deep.equal([
                 { id: 'FO', slug: 'foo' },
                 { id: 'BA', slug: 'bar' },
                 { id: 'NA', slug: 'narnia' }
