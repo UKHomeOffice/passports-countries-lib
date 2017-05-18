@@ -29,8 +29,8 @@ countriesLib.start();
 ```
 let allCountries = countriesLib.getAllCountries();
 let residentCountries = countriesLib.getResidentCountries();
-let countryData = countriesLib.getCountyDataById('UK');
-let countryData = countriesLib.getCountyDataBySlug('united-kingdom');
+let countryData = countriesLib.getCountryDataById('UK');
+let countryData = countriesLib.getCountryDataBySlug('united-kingdom');
 ```
 
 ```
