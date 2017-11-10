@@ -94,6 +94,9 @@ describe('CountriesCachedModel', () => {
     describe('constructor', () => {
         it('should use default key name if no options supplied', () => {
             stubs.HmpoCachedModel.reset();
+            stubs.HmpoCachedModel
+                .onCall(0).returns(stubs.countryCache)
+                .onCall(1).returns(stubs.policyCache);
             instance = new stubs.CountriesCachedModel();
             stubs.HmpoCachedModel.args[0][1].should.contain({
                 key: 'countrieslib-countries',
