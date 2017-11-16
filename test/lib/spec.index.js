@@ -42,6 +42,7 @@ describe('CountriesCachedModel', () => {
                 set: sinon.stub().yields(null)
             },
             HmpoCachedModel: sinon.stub(),
+            MutedCachedModel: sinon.stub(),
             countryCache: {
                 start: sinon.stub(),
                 stop: sinon.stub(),
@@ -62,6 +63,10 @@ describe('CountriesCachedModel', () => {
             .onCall(0).returns(stubs.countryCache)
             .onCall(1).returns(stubs.policyCache);
 
+        stubs.MutedCachedModel
+            .onCall(0).returns(stubs.countryCache)
+            .onCall(1).returns(stubs.policyCache);
+
         options = {
             countryUrl: 'http://example.com/countries',
             policyUrl: 'http://example.com/policy',
@@ -73,7 +78,8 @@ describe('CountriesCachedModel', () => {
         };
 
         stubs.CountriesCachedModel = proxyquire('../../lib', {
-            'hmpo-cached-model': stubs.HmpoCachedModel
+            'hmpo-cached-model': stubs.HmpoCachedModel,
+            './muted-cached-model': stubs.MutedCachedModel
         });
 
         instance = new stubs.CountriesCachedModel(options);
@@ -93,19 +99,16 @@ describe('CountriesCachedModel', () => {
 
     describe('constructor', () => {
         it('should use default key name if no options supplied', () => {
-            stubs.HmpoCachedModel.reset();
-            stubs.HmpoCachedModel
-                .onCall(0).returns(stubs.countryCache)
-                .onCall(1).returns(stubs.policyCache);
+            stubs.MutedCachedModel.resetHistory();
             instance = new stubs.CountriesCachedModel();
-            stubs.HmpoCachedModel.args[0][1].should.contain({
-                key: 'countrieslib-countries',
+            stubs.MutedCachedModel.firstCall.should.have.been.calledWithMatch(null, {
+                key: 'countrieslib-countries'
             });
         });
 
         it('should create a country cache', () => {
-            stubs.HmpoCachedModel.should.have.been.calledTwice;
-            stubs.HmpoCachedModel.args[0][1].should.deep.equal({
+            stubs.MutedCachedModel.should.have.been.calledTwice.and.calledWithNew;
+            stubs.MutedCachedModel.firstCall.should.have.been.calledWithMatch(null, {
                 url: 'http://example.com/countries',
                 store: stubs.storeFactory,
                 key: 'test-countries',
@@ -116,8 +119,8 @@ describe('CountriesCachedModel', () => {
         });
 
         it('should create a policy cache', () => {
-            stubs.HmpoCachedModel.should.have.been.calledTwice;
-            stubs.HmpoCachedModel.args[1][1].should.deep.equal({
+            stubs.MutedCachedModel.should.have.been.calledTwice.and.calledWithNew;
+            stubs.MutedCachedModel.args[1][1].should.deep.equal({
                 url: 'http://example.com/policy',
                 store: stubs.storeFactory,
                 key: 'test-policy',
@@ -125,6 +128,12 @@ describe('CountriesCachedModel', () => {
                 storeInterval: 1000
             });
             instance._policyCache.should.equal(stubs.policyCache);
+        });
+
+        it('should use a non muted cached model if verbose option is set', () => {
+            stubs.HmpoCachedModel.resetHistory();
+            instance = new stubs.CountriesCachedModel({ verbose: true });
+            stubs.HmpoCachedModel.should.have.been.calledTwice.and.calledWithNew;
         });
 
         it('should attach indexers to cache change events', () => {
