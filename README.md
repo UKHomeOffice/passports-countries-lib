@@ -29,7 +29,9 @@ countriesLib.start();
 ```
 let allCountries = countriesLib.getAllCountries();
 let residentCountries = countriesLib.getResidentCountries();
-let countryData = countriesLib.getCountryDataById('UK');
+let overseasCountries = countriesLib.getOverseasCountries();
+let overseasResidenceCountries = countriesLib.getOverseasResidenceCountries();
+let countryData = countriesLib.getCountryDataById('GB');
 let countryData = countriesLib.getCountryDataBySlug('united-kingdom');
 ```
 
