@@ -32,6 +32,7 @@ let residentCountries = countriesLib.getResidentCountries();
 let overseasCountries = countriesLib.getOverseasCountries();
 let overseasResidenceCountries = countriesLib.getOverseasResidenceCountries();
 let overseasBirthCountries = countriesLib.getOverseasBirthCountries();
+let birthCountries = countriesLib.getBirthCountries();
 let countryData = countriesLib.getCountryDataById('GB');
 let countryData = countriesLib.getCountryDataBySlug('united-kingdom');
 ```
