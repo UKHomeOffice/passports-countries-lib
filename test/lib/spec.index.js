@@ -256,6 +256,20 @@ describe('CountriesCachedModel', () => {
         });
     });
 
+    describe('getBirthCountries', () => {
+        it('should be a function', () => {
+            instance.getBirthCountries.should.be.a('function');
+        });
+
+        it('should return the value of the _birthCountries array', () => {
+            instance._birthCountries = [
+                { countryCode: 'BA', countryNameSlug: 'bar' }
+            ];
+            instance.getBirthCountries().should.deep.equal([
+                { countryCode: 'BA', countryNameSlug: 'bar' }
+            ]);
+        });
+    });
 
     describe('_indexCountries', () => {
         it('should be a function', () => {
@@ -289,6 +303,14 @@ describe('CountriesCachedModel', () => {
         it('should set _overseasBirthCountries to all countries where countryCode is not GB and countryOfBirthFlag is true', () => {
             instance._indexCountries();
             instance._overseasBirthCountries.should.deep.equal([
+                { addressCountryFlag: false, countryCode: 'BA', countryNameSlug: 'bar', countryOfBirthFlag: true }
+            ]);
+        });
+
+        it('should set _birthCountries to all countries where countryOfBirthFlag is true', () => {
+            instance._indexCountries();
+            instance._birthCountries.should.deep.equal([
+                { addressCountryFlag: true, countryCode: 'GB', countryNameSlug: 'united-kingdom', countryOfBirthFlag: true },
                 { addressCountryFlag: false, countryCode: 'BA', countryNameSlug: 'bar', countryOfBirthFlag: true }
             ]);
         });
