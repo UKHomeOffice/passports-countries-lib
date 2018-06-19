@@ -10,6 +10,37 @@ const proxyquire = require('proxyquire').noCallThru().noPreserveCache();
 const CountriesCachedModel = require('../../lib');
 const HmpoCachedModel = require('hmpo-cached-model');
 
+let unitedKingdom = {
+    countryCode: 'GB',
+    countryNameSlug: 'united-kingdom',
+    addressCountryFlag: true,
+    countryOfBirthFlag: true,
+    displayName: 'United Kingdom'
+};
+let foo = {
+    countryCode: 'FO',
+    countryNameSlug: 'foo',
+    addressCountryFlag: true,
+    countryOfBirthFlag: false,
+    displayName: 'Foo'
+};
+let bar = {
+    countryCode: 'BA',
+    countryNameSlug: 'bar',
+    addressCountryFlag: false,
+    countryOfBirthFlag: true,
+    displayName: 'Bar'
+};
+let narnia = {
+    countryCode: 'NA',
+    countryNameSlug: 'narnia',
+    addressCountryFlag: null,
+    countryOfBirthFlag: null,
+    displayName: 'Narnia'
+};
+
+let countries = [unitedKingdom, foo, bar, narnia];
+
 describe('CountriesCachedModel', () => {
     let clock, instance, options, stubs;
 
@@ -20,17 +51,11 @@ describe('CountriesCachedModel', () => {
         sinon.stub(HmpoCachedModel.prototype, 'on');
         sinon.stub(HmpoCachedModel.prototype, 'get');
 
-        let countryData = [
-            { countryCode: 'GB', countryNameSlug: 'united-kingdom', addressCountryFlag: true, countryOfBirthFlag: true },
-            { countryCode: 'FO', countryNameSlug: 'foo', addressCountryFlag: true, countryOfBirthFlag: false },
-            { countryCode: 'BA', countryNameSlug: 'bar', addressCountryFlag: false, countryOfBirthFlag: true },
-            { countryCode: 'NA', countryNameSlug: 'narnia', addressCountryFlag: null, countryOfBirthFlag: null }
-        ];
         let policyData = [
-            { id: 'GB', channel: 'ONLINE', contentType: 1, status: 'ACTIVE' },
-            { id: 'FO', channel: 'ONLINE', contentType: 2, status: 'INACTIVE'  },
-            { id: 'BA', channel: 'NA', contentType: 7, status: 'INACTIVE'  },
-            { id: 'NA', channel: 'ONLINE', contentType: 7, status: 'INACTIVE'  }
+            {id: 'GB', channel: 'ONLINE', contentType: 1, status: 'ACTIVE'},
+            {id: 'FO', channel: 'ONLINE', contentType: 2, status: 'INACTIVE'},
+            {id: 'BA', channel: 'NA', contentType: 7, status: 'INACTIVE'},
+            {id: 'NA', channel: 'ONLINE', contentType: 7, status: 'INACTIVE'}
         ];
 
         stubs = {
@@ -47,7 +72,7 @@ describe('CountriesCachedModel', () => {
                 start: sinon.stub(),
                 stop: sinon.stub(),
                 on: sinon.stub(),
-                get: sinon.stub().returns(countryData)
+                get: sinon.stub().returns(countries)
             },
             policyCache: {
                 start: sinon.stub(),
@@ -132,7 +157,7 @@ describe('CountriesCachedModel', () => {
 
         it('should use a non muted cached model if verbose option is set', () => {
             stubs.HmpoCachedModel.resetHistory();
-            instance = new stubs.CountriesCachedModel({ verbose: true });
+            instance = new stubs.CountriesCachedModel({verbose: true});
             stubs.HmpoCachedModel.should.have.been.calledTwice.and.calledWithNew;
         });
 
@@ -187,12 +212,7 @@ describe('CountriesCachedModel', () => {
         });
 
         it('should return all countries', () => {
-            instance.getAllCountries().should.deep.equal([
-                { addressCountryFlag: true, countryCode: 'GB', countryNameSlug: 'united-kingdom', countryOfBirthFlag: true },
-                { addressCountryFlag: true, countryCode: 'FO', countryNameSlug: 'foo', countryOfBirthFlag: false },
-                { addressCountryFlag: false, countryCode: 'BA', countryNameSlug: 'bar', countryOfBirthFlag: true },
-                { addressCountryFlag: null, countryCode: 'NA', countryNameSlug: 'narnia', countryOfBirthFlag: null }
-            ]);
+            instance.getAllCountries().should.deep.equal(countries);
         });
     });
 
@@ -203,10 +223,10 @@ describe('CountriesCachedModel', () => {
 
         it('should return the value of the _overseasCountries array', () => {
             instance._overseasCountries = [
-                { countryCode: 'FO', countryNameSlug: 'foo' }
+                {countryCode: 'FO', countryNameSlug: 'foo'}
             ];
             instance.getOverseasCountries().should.deep.equal([
-                { countryCode: 'FO', countryNameSlug: 'foo' }
+                {countryCode: 'FO', countryNameSlug: 'foo'}
             ]);
         });
     });
@@ -218,10 +238,10 @@ describe('CountriesCachedModel', () => {
 
         it('should return the value of the _residenceCountries array', () => {
             instance._residenceCountries = [
-                { countryCode: 'FO', countryNameSlug: 'foo' }
+                {countryCode: 'FO', countryNameSlug: 'foo'}
             ];
             instance.getResidenceCountries().should.deep.equal([
-                { countryCode: 'FO', countryNameSlug: 'foo' }
+                {countryCode: 'FO', countryNameSlug: 'foo'}
             ]);
         });
     });
@@ -233,10 +253,10 @@ describe('CountriesCachedModel', () => {
 
         it('should return the value of the _overseasResidenceCountries array', () => {
             instance._overseasResidenceCountries = [
-                { countryCode: 'FO', countryNameSlug: 'foo' }
+                {countryCode: 'FO', countryNameSlug: 'foo'}
             ];
             instance.getOverseasResidenceCountries().should.deep.equal([
-                { countryCode: 'FO', countryNameSlug: 'foo' }
+                {countryCode: 'FO', countryNameSlug: 'foo'}
             ]);
         });
     });
@@ -248,10 +268,10 @@ describe('CountriesCachedModel', () => {
 
         it('should return the value of the _overseasBirthCountries array', () => {
             instance._overseasBirthCountries = [
-                { countryCode: 'BA', countryNameSlug: 'bar' }
+                {countryCode: 'BA', countryNameSlug: 'bar'}
             ];
             instance.getOverseasBirthCountries().should.deep.equal([
-                { countryCode: 'BA', countryNameSlug: 'bar' }
+                {countryCode: 'BA', countryNameSlug: 'bar'}
             ]);
         });
     });
@@ -263,10 +283,10 @@ describe('CountriesCachedModel', () => {
 
         it('should return the value of the _birthCountries array', () => {
             instance._birthCountries = [
-                { countryCode: 'BA', countryNameSlug: 'bar' }
+                {countryCode: 'BA', countryNameSlug: 'bar'}
             ];
             instance.getBirthCountries().should.deep.equal([
-                { countryCode: 'BA', countryNameSlug: 'bar' }
+                {countryCode: 'BA', countryNameSlug: 'bar'}
             ]);
         });
     });
@@ -279,59 +299,65 @@ describe('CountriesCachedModel', () => {
         it('should set _overseasCountries to all countries except GB', () => {
             instance._indexCountries();
             instance._overseasCountries.should.deep.equal([
-                { addressCountryFlag: true, countryCode: 'FO', countryNameSlug: 'foo', countryOfBirthFlag: false },
-                { addressCountryFlag: false, countryCode: 'BA', countryNameSlug: 'bar', countryOfBirthFlag: true },
-                { addressCountryFlag: null, countryCode: 'NA', countryNameSlug: 'narnia', countryOfBirthFlag: null }
+                foo, bar, narnia
             ]);
         });
 
         it('should set _residenceCountries to all countries where addressCountryFlag is true', () => {
             instance._indexCountries();
             instance._residenceCountries.should.deep.equal([
-                { addressCountryFlag: true, countryCode: 'GB', countryNameSlug: 'united-kingdom', countryOfBirthFlag: true },
-                { addressCountryFlag: true, countryCode: 'FO', countryNameSlug: 'foo', countryOfBirthFlag: false }
+                unitedKingdom, foo
             ]);
         });
 
         it('should set _overseasResidenceCountries to all countries where countryCode is not GB and addressCountryFlag is true', () => {
             instance._indexCountries();
             instance._overseasResidenceCountries.should.deep.equal([
-                { addressCountryFlag: true, countryCode: 'FO', countryNameSlug: 'foo', countryOfBirthFlag: false }
+                foo
             ]);
         });
 
         it('should set _overseasBirthCountries to all countries where countryCode is not GB and countryOfBirthFlag is true', () => {
             instance._indexCountries();
             instance._overseasBirthCountries.should.deep.equal([
-                { addressCountryFlag: false, countryCode: 'BA', countryNameSlug: 'bar', countryOfBirthFlag: true }
+                bar
             ]);
         });
 
         it('should set _birthCountries to all countries where countryOfBirthFlag is true', () => {
             instance._indexCountries();
             instance._birthCountries.should.deep.equal([
-                { addressCountryFlag: true, countryCode: 'GB', countryNameSlug: 'united-kingdom', countryOfBirthFlag: true },
-                { addressCountryFlag: false, countryCode: 'BA', countryNameSlug: 'bar', countryOfBirthFlag: true }
+                unitedKingdom, bar
             ]);
         });
 
         it('should index countries by id', () => {
             instance._indexCountries();
             instance._countriesById.should.deep.equal({
-                GB: { addressCountryFlag: true, countryCode: 'GB', countryNameSlug: 'united-kingdom', countryOfBirthFlag: true },
-                FO: { addressCountryFlag: true, countryCode: 'FO', countryNameSlug: 'foo', countryOfBirthFlag: false },
-                BA: { addressCountryFlag: false, countryCode: 'BA', countryNameSlug: 'bar', countryOfBirthFlag: true },
-                NA: { addressCountryFlag: null, countryCode: 'NA', countryNameSlug: 'narnia', countryOfBirthFlag: null }
+                GB: unitedKingdom,
+                FO: foo,
+                BA: bar,
+                NA: narnia
             });
         });
 
         it('should index countries by slug', () => {
             instance._indexCountries();
             instance._countriesBySlug.should.deep.equal({
-                'united-kingdom': { addressCountryFlag: true, countryCode: 'GB', countryNameSlug: 'united-kingdom', countryOfBirthFlag: true },
-                foo: { addressCountryFlag: true, countryCode: 'FO', countryNameSlug: 'foo', countryOfBirthFlag: false },
-                bar: { addressCountryFlag: false, countryCode: 'BA', countryNameSlug: 'bar', countryOfBirthFlag: true },
-                narnia: { addressCountryFlag: null, countryCode: 'NA', countryNameSlug: 'narnia', countryOfBirthFlag: null }
+                'united-kingdom': unitedKingdom,
+                'foo': foo,
+                'bar': bar,
+                'narnia': narnia
+            });
+        });
+
+        it('should index countries by display name', () => {
+            instance._indexCountries();
+            instance._countriesByDisplayName.should.deep.equal({
+                'United Kingdom': unitedKingdom,
+                'Foo': foo,
+                'Bar': bar,
+                'Narnia': narnia
             });
         });
     });
@@ -344,10 +370,10 @@ describe('CountriesCachedModel', () => {
         it('should index policies by id', () => {
             instance._indexPolicies();
             instance._policiesById.should.deep.equal({
-                GB: { id: 'GB', channel: 'ONLINE', contentType: 1, status: 'ACTIVE' },
-                FO: { id: 'FO', channel: 'ONLINE', contentType: 2, status: 'INACTIVE' },
-                BA: { id: 'BA', channel: 'NA', contentType: 7, status: 'INACTIVE' },
-                NA: { id: 'NA', channel: 'ONLINE', contentType: 7, status: 'INACTIVE' }
+                GB: {id: 'GB', channel: 'ONLINE', contentType: 1, status: 'ACTIVE'},
+                FO: {id: 'FO', channel: 'ONLINE', contentType: 2, status: 'INACTIVE'},
+                BA: {id: 'BA', channel: 'NA', contentType: 7, status: 'INACTIVE'},
+                NA: {id: 'NA', channel: 'ONLINE', contentType: 7, status: 'INACTIVE'}
             });
         });
     });
@@ -360,24 +386,14 @@ describe('CountriesCachedModel', () => {
         it('should get a country by its id', () => {
             instance._indexCountries();
             instance.getCountryById('GB').should.deep.equal(
-                {
-                    addressCountryFlag: true,
-                    countryCode: 'GB',
-                    countryNameSlug: 'united-kingdom',
-                    countryOfBirthFlag: true,
-                }
+                unitedKingdom
             );
         });
 
         it('should transform UK to GB and get a country by its id', () => {
             instance._indexCountries();
             instance.getCountryById('UK').should.deep.equal(
-                {
-                    addressCountryFlag: true,
-                    countryCode: 'GB',
-                    countryNameSlug: 'united-kingdom',
-                    countryOfBirthFlag: true,
-                }
+                unitedKingdom
             );
         });
 
@@ -400,12 +416,7 @@ describe('CountriesCachedModel', () => {
         it('should get a country by its slug', () => {
             instance._indexCountries();
             instance.getCountryBySlug('united-kingdom').should.deep.equal(
-                {
-                    addressCountryFlag: true,
-                    countryCode: 'GB',
-                    countryNameSlug: 'united-kingdom',
-                    countryOfBirthFlag: true
-                }
+                unitedKingdom
             );
         });
 
@@ -417,6 +428,29 @@ describe('CountriesCachedModel', () => {
         it('should return undefined if country is not found', () => {
             instance._indexCountries();
             expect(instance.getCountryBySlug('not-found')).to.equal(undefined);
+        });
+    });
+
+    describe('getCountryByDisplayName', () => {
+        it('should be a function', () => {
+            instance.getCountryByDisplayName.should.be.a('function');
+        });
+
+        it('should get a country by its display name', () => {
+            instance._indexCountries();
+            instance.getCountryByDisplayName('United Kingdom').should.deep.equal(
+                unitedKingdom
+            );
+        });
+
+        it('should return null if no display name is supplied', () => {
+            instance._indexCountries();
+            expect(instance.getCountryByDisplayName()).to.equal(null);
+        });
+
+        it('should return undefined if country is not found', () => {
+            instance._indexCountries();
+            expect(instance.getCountryByDisplayName('not-found')).to.equal(undefined);
         });
     });
 
@@ -434,6 +468,7 @@ describe('CountriesCachedModel', () => {
                     countryCode: 'GB',
                     countryNameSlug: 'united-kingdom',
                     countryOfBirthFlag: true,
+                    displayName: 'United Kingdom',
                     status: 'ACTIVE',
                     channel: 'ONLINE',
                     contentType: 1
@@ -465,6 +500,40 @@ describe('CountriesCachedModel', () => {
                 addressCountryFlag: true,
                 countryCode: 'GB',
                 countryNameSlug: 'united-kingdom',
+                displayName: 'United Kingdom',
+                countryOfBirthFlag: true,
+                channel: 'ONLINE',
+                status: 'ACTIVE',
+                contentType: 1
+            });
+        });
+
+        it('should return undefined if country is not found', () => {
+            instance._indexCountries();
+            expect(instance.getCountryDataBySlug('??')).to.equal(undefined);
+        });
+
+        it('should return null if no policy data is found', () => {
+            instance._indexCountries();
+            instance._indexPolicies();
+            delete instance._policiesById['GB'];
+            expect(instance.getCountryDataBySlug('united-kingdom')).to.equal(null);
+        });
+    });
+
+    describe('getCountryDataBySlug', () => {
+        it('should be a function', () => {
+            instance.getCountryDataBySlug.should.be.a('function');
+        });
+
+        it('should get a country and its policy data by its id', () => {
+            instance._indexCountries();
+            instance._indexPolicies();
+            instance.getCountryDataBySlug('united-kingdom').should.deep.equal({
+                addressCountryFlag: true,
+                countryCode: 'GB',
+                countryNameSlug: 'united-kingdom',
+                displayName: 'United Kingdom',
                 countryOfBirthFlag: true,
                 channel: 'ONLINE',
                 status: 'ACTIVE',
