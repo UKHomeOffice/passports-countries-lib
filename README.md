@@ -17,9 +17,7 @@ let countriesLib = new CountriesLib({
     key: 'store-key-prefix',
     storeInterval: 10000, // 10 seconds
     countryUrl: 'http://example.com/api/countries',
-    countryInterval: 3000000, // 5 minutes
-    policyUrl: 'http://example.com/api/policies',
-    policyInterval: 6000000, // 10 minutes
+    countryInterval: 3000000 // 5 minutes
 });
 
 // start polling
