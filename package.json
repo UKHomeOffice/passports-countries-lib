@@ -1,6 +1,6 @@
 {
   "name": "hmpo-countries-lib",
-  "version": "2.3.0",
+  "version": "3.0.0",
   "description": "Country lists",
   "main": "./lib",
   "scripts": {
