@@ -6,12 +6,10 @@
   "scripts": {
     "pretest": "npm run lint",
     "test": "npm run unit",
-    "posttest": "npm run check-coverage",
+    "posttest": "npm run check-coverage && npm audit",
     "lint": "eslint .",
-    "unit": "istanbul cover _mocha -- test --recursive",
-    "check-coverage": "istanbul check-coverage",
-    "snyk": "snyk test",
-    "snyk:dev": "snyk test --dev"
+    "unit": "nyc --reporter=lcov --reporter=text-summary _mocha test --recursive",
+    "check-coverage": "nyc check-coverage"
   },
   "repository": {
     "type": "git",
@@ -20,26 +18,37 @@
   "author": "HMPO",
   "license": "MIT",
   "engines": {
-    "node": ">=4"
+    "node": ">=8"
   },
   "bugs": {
     "url": "https://github.com/UKHomeOffice/passports-countries-lib/issues"
   },
   "homepage": "https://github.com/UKHomeOffice/passports-countries-lib",
   "dependencies": {
-    "debug": "^3.1.0",
-    "hmpo-cached-model": "^2.1.0",
-    "hmpo-model": "^2.0.0",
+    "debug": "^4.1.1",
+    "hmpo-cached-model": "^3.0.0",
+    "hmpo-model": "^3.0.0",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
     "chai": "^4.1.2",
-    "eslint": "^4.10.0",
-    "istanbul": "^0.4.3",
-    "mocha": "^4.0.1",
-    "proxyquire": "^1.7.11",
-    "sinon": "^4.1.2",
-    "sinon-chai": "^2.7.0",
-    "snyk": "^1.24.5"
+    "eslint": "^6.8.0",
+    "mocha": "^7.0.1",
+    "nyc": "^15.0.0",
+    "proxyquire": "^2.1.3",
+    "sinon": "^8.1.1",
+    "sinon-chai": "^3.4.0"
+  },
+  "nyc": {
+    "all": true,
+    "exclude": [
+      "coverage/**",
+      "lib/muted-cached-model.js",
+      "test/**"
+    ],
+    "lines": 100,
+    "branches": 100,
+    "functions": 100,
+    "statements": 100
   }
 }
